@@ -14,13 +14,13 @@ My aim is to take the dataset containing these measurements and create a model t
 
 ##Getting and Cleaning
 
-```{r}
+```{r, echo=T}
 library(caret)
 train=read.csv("pml-training.csv")
 ```
 
 Handle the missing values 
-```{r}
+```{r, echo=T}
 miss=as.numeric(lapply(train,function(x){sum(is.na(x))}))
 i=which(train$new_window=="yes")
 j=which(miss==19216)
@@ -30,7 +30,7 @@ ptrain=ptrain[,-j]
 
 change class to numeric for all columns except for name and classe
 
-```{r}
+```{r, echo=T}
 for(i in 4:92)
 {
   ptrain[,i]=as.numeric(ptrain[,i])
@@ -40,7 +40,7 @@ for(i in 4:92)
 
 Remove the variables with almost zero variance
 
-```{r}
+```{r, echo=T}
 i=nzv(ptrain)
 ptrain=ptrain[,-i]
 
@@ -48,7 +48,7 @@ ptrain=ptrain[,-i]
 
 Divide the data into training and test 
 
-```{r}
+```{r, echo=T}
 intrain=createDataPartition(ptrain$classe,p=0.7,list=F)
 tptrain=ptrain[intrain,]
 teptrain=ptrain[-intrain,]
@@ -56,14 +56,14 @@ teptrain=ptrain[-intrain,]
 
 Build a random forest model using only the summarising variables like total_accel_forearm and yaw_belt etc.
 
-```{r}
+```{r, echo=T}
 m1=train(classe~total_accel_forearm+yaw_forearm+pitch_forearm+roll_forearm+total_accel_dumbbell+yaw_dumbbell+pitch_dumbbell+roll_dumbbell+total_accel_arm+yaw_arm+pitch_arm+roll_arm+total_accel_belt+yaw_belt+pitch_belt+roll_belt,data=tptrain,method="rf")
 
 ```
 
 Confusion matrix using test data we created earlier
 
-```{r}
+```{r, echo=T}
 confusionMatrix(predict(m1,teptrain),teptrain$classe)
 
 ```
@@ -72,7 +72,7 @@ Precission and Recall are good. So, I won't change the model.
 
 Lets look the variable importance plot 
 
-```{r}
+```{r, echo=T}
  plot(varImp(m1))
 
 ```
@@ -81,7 +81,7 @@ Lets look the variable importance plot
 Lets predict it on the provided test data 
 
 
-```{r}
+```{r,echo =TRUE}
 test=read.csv("pml-testing.csv")
  ptest=test[,-j]
  for(t in 4:92)
